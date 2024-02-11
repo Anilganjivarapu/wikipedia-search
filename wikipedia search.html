@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>wikipedia Search </title>
+    <style>
+        body {
+            background-color: #ffcce7;
+            font-family: serif;
+        }
+        #header {
+            background-image: linear-gradient(100deg,#960ff9,#aebaf8);
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            margin: 1rem;
+            font-size: 1.5rem;
+            text-shadow: 10px 10px 50px rgba(0,0,0,0.6);;
+            border-radius: 1rem;
+            box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+        }
+        #header>h1 {
+            text-transform: capitalize;
+        }
+        #search-results {
+            /* background-image: linear-gradient(60deg,#45b7c1,#d9ecc7); */
+            background-image: linear-gradient(60deg,#ead6ee,#a0f1ea);
+            padding: 20px;
+            margin: 1rem;
+            border-radius: 1rem;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+        }
+        #wikipedia-results {
+            margin: 20px 0;
+        }
+        #wikipedia-results h2 {
+            color: #fff;
+        }
+
+        #wikipedia-results li {
+            list-style:none;
+            color: #fff;
+        }
+
+        #wikipedia-results a{
+            text-decoration: none;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            
+        }
+
+        form>input {
+            border: none;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            width: fit-content;
+            font-size: 1.5rem;
+            font-family: serif;
+            transition: all ease-in-out 0.4s;
+            box-shadow: 5px 5px 19px rgba(0, 0, 0, 0.3);
+        }
+
+        form>input:hover{
+            border: none;
+            transform: scale(1.02);   
+        }
+
+        form>input:active{
+            border: none;
+        }
+
+        form>button {
+            border: none;
+            border-radius: 1.5rem;
+            font-size: 1rem;
+            background-color:#960ff9;
+            color: #fff;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all ease-in-out 0.4s;
+            padding: 1rem;
+        }
+        form>button:hover{
+            transform: scale(1.05);
+            background-color: #960ff9;
+        }
+
+        ul>li {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        ul a {
+            color:#f5850e;
+            font-size: 2rem;
+            margin: 0;
+        }
+        ul p {
+            color: rgb(5, 84, 133);
+            font-size: 1.4rem;
+        }
+
+        #wikipedia-results>h2 {
+            text-align: center;
+            font-size: 2.3rem;
+            color: #4d5198;
+            text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+            text-transform: capitalize;
+        }
+
+    
+
+
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>Wikipedia Search</h1>
+    </div>
+    <div id="search-results">
+        <form id="search-form">
+            <input type="text" id="search-input" placeholder="Enter your topic to search">
+            <button type="submit">Search</button>
+        </form>
+        <div id="wikipedia-results">
+            <h2>wikipedia Search results</h2>
+            <ul id="wikipedia-list"></ul>
+            </div>
+    </div>
+
+    <script>
+        function fetchWikipediaResults(query) {
+            const wikipediaEndpoint = 'https://en.wikipedia.org/w/api.php';
+            const wikipediaParams = {
+                action: 'query',
+                list: 'search',
+                format: 'json',
+                srsearch: query,
+                callback: 'processResults',
+            };
+            
+            const script = document.createElement('script');
+            script.src = `${wikipediaEndpoint}?${new URLSearchParams(wikipediaParams)}`;
+            document.body.appendChild(script);
+        }
+        function processResults(data) {
+            const wikipediaList = document.getElementById('wikipedia-list');
+            wikipediaList.innerHTML = '';
+            if (data.query && data.query.search) {
+                data.query.search.forEach(result => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<a href="https://en.wikipedia.org/wiki/${result.title}" target="_blank">${result.title}</a><p>${result.snippet}</p>`;
+                    wikipediaList.appendChild(listItem);
+                    listItem.classList.add("li-item");
+                });
+            } else {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = 'No results found!!!';
+                wikipediaList.appendChild(listItem);
+                listItem.classList.add("not");
+            }
+        }
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const searchQuery = document.getElementById('search-input').value;
+            fetchWikipediaResults(searchQuery);
+        });
+    </script>
+</body>
+</html>
